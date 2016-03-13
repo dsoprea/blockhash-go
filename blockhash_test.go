@@ -10,7 +10,7 @@ import (
 const defaultFile = "fixtures/tulips-1083572_1920.jpg"
 
 var fileHashMap = map[string]string{
-	"fixtures/tulips-1083572_1920.jpg": "801e3818fd80ffecfffc0ffc0e38000899ff193c1d38083c5c6c9e781e310fb0",
+	"fixtures/tulips-1083572_1920.jpg":         "801e3818fd80ffecfffc0ffc0e38000899ff193c1d38083c5c6c9e781e310fb0",
 	"fixtures/almond-blossom-1229138_1920.jpg": "27822586176e47fc005d02fa351df7d87bfa7bf003908624cc764facc5887e80",
 }
 
@@ -35,7 +35,7 @@ func ExampleBlockhash() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hash := Blockhash(reader, 16) // Divide the image into 16x16 blocks, and calculate the hash
+	hash := Blockhash(reader, 16)       // Divide the image into 16x16 blocks, and calculate the hash
 	fmt.Println("Bits", hash.Bits[:32]) // You should use the entire content in `Bits` though
 	fmt.Println("Hex", hash.ToHex())
 	// Output:

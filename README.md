@@ -3,6 +3,9 @@
 [![GoDoc](https://godoc.org/github.com/haochi/blockhash-go?status.svg)](https://godoc.org/github.com/haochi/blockhash-go)
 
 Go implementation of [blockhash](http://blockhash.io), a perceptual hash of images
+
+See godoc.org for [documentation](https://godoc.org/github.com/haochi/blockhash-go).
+
 [Reference implementation](https://github.com/commonsmachinery/blockhash-python/tree/0d76144cf5b6ac)
 
 ## Install
