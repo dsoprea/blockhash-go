@@ -10,7 +10,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"log"
 	"sort"
 )
 
@@ -21,11 +20,11 @@ type Hash struct {
 
 // Generates the block hash for a given image
 // `bits` should be a power of 2 number (e.g. 2, 4, 8, 16, etc.); the number of output bits is equal to bits^2
-func Blockhash(reader io.Reader, bits int) Hash {
+func Blockhash(reader io.Reader, bits int) (*Hash, error) {
 	img, _, err := image.Decode(reader)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	bounds := img.Bounds()
@@ -34,27 +33,35 @@ func Blockhash(reader io.Reader, bits int) Hash {
 
 	result := make([]int, bits*bits)
 
+	// divide the image into `bits * bits` grids
+	// of size blockSizeX * blockSizeY
+	// then add up the r+g+b values for each pixel
 	for y := 0; y < bits; y++ {
+		yBlockSizeY := y * blockSizeY
+		yBits := y * bits
 		for x := 0; x < bits; x++ {
 			var value int
+			xBlockSizeX := x * blockSizeX
 
 			for iy := 0; iy < blockSizeY; iy++ {
 				for ix := 0; ix < blockSizeX; ix++ {
-					cx := x*blockSizeX + ix
-					cy := y*blockSizeY + iy
-					value += totalValue(img, cx, cy)
+					cx := xBlockSizeX + ix
+					cy := yBlockSizeY + iy
+					r, g, b, _ := img.At(cx, cy).RGBA()
+					value += int(r + g + b)
 				}
 			}
 
-			result[y*bits+x] = value
+			result[yBits+x] = value
 		}
 	}
 
 	translateBlocksToBits(result, blockSizeX*blockSizeY)
 
-	return Hash{
+	hash := &Hash{
 		Bits: result,
 	}
+	return hash, nil
 }
 
 // A string representation of the hash in hex format
@@ -84,9 +91,10 @@ func translateBlocksToBits(blocks []int, pixelsPerBlock int) []int {
 	for i := 0; i < numHorizontalBands; i++ {
 		begin, end := i*bandSize, (i+1)*bandSize
 		m := median(blocks[begin:end])
+		mGreaterThanHalfBlockValue := m > halfBlockValue
 		for j := begin; j < end; j++ {
 			v := blocks[j]
-			if v > m || (abs(v-m) < 1 && m > halfBlockValue) {
+			if v > m || (mGreaterThanHalfBlockValue && abs(v-m) < 1) {
 				blocks[j] = 1
 			} else {
 				blocks[j] = 0
@@ -123,9 +131,4 @@ func abs(num int) int {
 		return -num
 	}
 	return num
-}
-
-func totalValue(img image.Image, x int, y int) int {
-	r, g, b, _ := img.At(x, y).RGBA()
-	return int(r + g + b)
 }

@@ -21,7 +21,7 @@ func TestBlockhash(t *testing.T) {
 			t.Error(err)
 		}
 
-		hash := Blockhash(reader, 16)
+		hash, _ := Blockhash(reader, 16)
 
 		if hash.ToHex() != fileHash {
 			t.Error("Hash doesn't match for", file)
@@ -35,7 +35,7 @@ func ExampleBlockhash() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hash := Blockhash(reader, 16)       // Divide the image into 16x16 blocks, and calculate the hash
+	hash, _ := Blockhash(reader, 16)    // Divide the image into 16x16 blocks, and calculate the hash
 	fmt.Println("Bits", hash.Bits[:32]) // You should use the entire content in `Bits` though
 	fmt.Println("Hex", hash.ToHex())
 	// Output:
