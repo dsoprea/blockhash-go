@@ -120,7 +120,7 @@ func median(data []int) int {
 
 	mid := len / 2
 	if len%2 == 0 {
-		return (cpy[mid] + cpy[mid+1]) / 2
+		return (cpy[mid-1] + cpy[mid]) / 2
 	}
 
 	return cpy[mid]
